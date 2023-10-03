@@ -1,3 +1,5 @@
+import { getPlaneGrid } from ".";
+
 export interface GridState {
     gridSize: number;
     leftPlaneGrid: number[][];
@@ -37,6 +39,7 @@ export function gridReducer(state: GridState, action: GridActions) {
         case GridActionKind.ChangeGridSize:
             return {
                 ...state,
+                ...getPlaneGrid(payload),
                 gridSize: payload,
             };
         default:

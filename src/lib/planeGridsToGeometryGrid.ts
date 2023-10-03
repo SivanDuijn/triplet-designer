@@ -32,15 +32,18 @@ export default function planeGridsToGeometryGrid(
 
                 if (!(leftValue && rightValue && bottomValue)) continue;
 
-                const leftBrush = getBrush("left", leftValue, cube, material);
-                const rightBrush = getBrush("right", rightValue, cube, material);
-                const bottomBrush = getBrush("bottom", bottomValue, cube, material);
-
-                const csgEvaluator = new Evaluator();
-                let shape = csgEvaluator.evaluate(leftBrush, rightBrush, INTERSECTION);
-                shape = csgEvaluator.evaluate(shape, bottomBrush, INTERSECTION);
-
                 const shapeGroup = new THREE.Group();
+                let shape: Brush | THREE.Mesh | undefined;
+                if (leftValue > 1 || rightValue > 1 || bottomValue > 1) {
+                    const leftBrush = getBrush("left", leftValue, cube, material);
+                    const rightBrush = getBrush("right", rightValue, cube, material);
+                    const bottomBrush = getBrush("bottom", bottomValue, cube, material);
+
+                    const csgEvaluator = new Evaluator();
+                    shape = csgEvaluator.evaluate(leftBrush, rightBrush, INTERSECTION);
+                    shape = csgEvaluator.evaluate(shape as Brush, bottomBrush, INTERSECTION);
+                } else shape = new THREE.Mesh(cube, material);
+
                 shape.castShadow = true;
                 shapeGroup.add(shape);
                 const edges = new THREE.EdgesGeometry(shape.geometry);

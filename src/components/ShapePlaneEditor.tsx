@@ -1,3 +1,4 @@
+import { TrashIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { useGridSize, usePlaneGrid } from "src/lib/GridContext/hooks";
@@ -35,6 +36,7 @@ export const ShapePlaneEditor = (props: ShapePlaneEditorProps) => {
                     )),
                 )}
             </svg>
+            {/* <TrashIcon className={clsx("w-6")} /> */}
         </div>
     );
 };
@@ -135,47 +137,47 @@ function Cell(props: CellProps) {
             />
 
             <path
-                d={`M ${x + cellSize * 0.25} ${y} 
-                    H ${x + cellSize * 0.75 - 1}
-                    L ${x + cellSize - 1} ${y + cellSize * 0.25}
-                    V ${y + cellSize * 0.75 - 1}
-                    L ${x + cellSize * 0.75 - 1} ${y + cellSize - 1}
-                    H ${x + cellSize * 0.25}
-                    L ${x} ${y + cellSize * 0.75 - 1}
-                    V ${y + cellSize * 0.25}
+                d={`M ${x + cellSize * 0.33} ${y} 
+                    H ${x + cellSize * 0.66 - 1}
+                    L ${x + cellSize - 1} ${y + cellSize * 0.33}
+                    V ${y + cellSize * 0.66 - 1}
+                    L ${x + cellSize * 0.66 - 1} ${y + cellSize - 1}
+                    H ${x + cellSize * 0.33}
+                    L ${x} ${y + cellSize * 0.66 - 1}
+                    V ${y + cellSize * 0.33}
 
-                    L ${x + cellSize * 0.25} ${y} `}
+                    L ${x + cellSize * 0.33} ${y} `}
                 className={clsx("fill-transparent")}
                 {...getMouseEvents(1, setHoveringMiddle)}
             />
             <path
                 d={`M ${x} ${y} 
-                    V ${y + cellSize * 0.25} 
-                    L ${x + cellSize * 0.25} ${y}
+                    V ${y + cellSize * 0.33} 
+                    L ${x + cellSize * 0.33} ${y}
                     H ${x}`}
                 className={clsx("fill-transparent")}
                 {...getMouseEvents(2, setHoveringTopLeft)}
             />
             <path
                 d={`M ${x + cellSize - 1} ${y} 
-                    V ${y + cellSize * 0.25} 
-                    L ${x + cellSize * 0.75 - 1} ${y}
+                    V ${y + cellSize * 0.33} 
+                    L ${x + cellSize * 0.66 - 1} ${y}
                     H ${x + cellSize - 1}`}
                 className={clsx("fill-transparent")}
                 {...getMouseEvents(3, setHoveringTopRight)}
             />
             <path
                 d={`M ${x + cellSize - 1} ${y + cellSize - 1} 
-                    V ${y + cellSize * 0.75 - 1} 
-                    L ${x + cellSize * 0.75 - 1} ${y + cellSize - 1}
+                    V ${y + cellSize * 0.66 - 1} 
+                    L ${x + cellSize * 0.66 - 1} ${y + cellSize - 1}
                     H ${x + cellSize - 1}`}
                 className={clsx("fill-transparent")}
                 {...getMouseEvents(4, setHoveringBottomRight)}
             />
             <path
                 d={`M ${x} ${y + cellSize - 1} 
-                    V ${y + cellSize * 0.75 - 1} 
-                    L ${x + cellSize * 0.25} ${y + cellSize - 1} 
+                    V ${y + cellSize * 0.66 - 1} 
+                    L ${x + cellSize * 0.33} ${y + cellSize - 1} 
                     H ${x}`}
                 className={clsx("fill-transparent")}
                 {...getMouseEvents(5, setHoveringBottomLeft)}

@@ -2,21 +2,23 @@ import { createContext, ReactElement, useReducer, Dispatch } from "react";
 import { GridActions, GridState, gridReducer } from "./reducer";
 
 const initGridSize = 5;
-const leftPlaneGrid = Array(initGridSize)
-    .fill([])
-    .map(() => Array(initGridSize).fill(false));
-const rightPlaneGrid = Array(initGridSize)
-    .fill([])
-    .map(() => Array(initGridSize).fill(false));
-const bottomPlaneGrid = Array(initGridSize)
-    .fill([])
-    .map(() => Array(initGridSize).fill(false));
+export function getPlaneGrid(gridSize: number) {
+    return {
+        leftPlaneGrid: Array(gridSize)
+            .fill([])
+            .map(() => Array(gridSize).fill(false)),
+        rightPlaneGrid: Array(gridSize)
+            .fill([])
+            .map(() => Array(gridSize).fill(false)),
+        bottomPlaneGrid: Array(gridSize)
+            .fill([])
+            .map(() => Array(gridSize).fill(false)),
+    };
+}
 
 const initialState: GridState = {
     gridSize: initGridSize,
-    leftPlaneGrid: leftPlaneGrid,
-    rightPlaneGrid: rightPlaneGrid,
-    bottomPlaneGrid: bottomPlaneGrid,
+    ...getPlaneGrid(initGridSize),
 };
 
 export const GridContext = createContext<{

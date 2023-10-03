@@ -10,6 +10,7 @@
         "export": "next export"
     },
     "dependencies": {
+        "@heroicons/react": "2.0.18",
         "clsx": "1.2.1",
         "next": "12.3.0",
         "obj-file-parser-ts": "0.6.5",
