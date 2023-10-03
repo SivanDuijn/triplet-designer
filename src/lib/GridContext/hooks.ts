@@ -15,6 +15,9 @@ export function usePlaneGrid(plane: "left" | "right" | "bottom") {
     const changePlaneGrid = (args: Omit<ChangePlaneGridAction["payload"], "plane">) => {
         dispatch({ type: GridActionKind.ChangePlaneGrid, payload: { ...args, plane } });
     };
+    const resetPlaneGrid = () => {
+        dispatch({ type: GridActionKind.ResetPlaneGrid, payload: plane });
+    };
     return {
         planeGrid:
             plane === "left"
@@ -23,5 +26,6 @@ export function usePlaneGrid(plane: "left" | "right" | "bottom") {
                 ? state.rightPlaneGrid
                 : state.bottomPlaneGrid,
         changePlaneGrid,
+        resetPlaneGrid,
     };
 }

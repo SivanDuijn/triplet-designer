@@ -13,7 +13,7 @@ export type ShapePlaneEditorProps = {
 export const ShapePlaneEditor = (props: ShapePlaneEditorProps) => {
     const { gridSize } = useGridSize();
     const cellSize = 100 / gridSize;
-    const { planeGrid, changePlaneGrid } = usePlaneGrid(props.plane);
+    const { planeGrid, changePlaneGrid, resetPlaneGrid } = usePlaneGrid(props.plane);
 
     return (
         <div className={props.className}>
@@ -36,7 +36,17 @@ export const ShapePlaneEditor = (props: ShapePlaneEditorProps) => {
                     )),
                 )}
             </svg>
-            {/* <TrashIcon className={clsx("w-6")} /> */}
+            <div className={clsx("flex", "justify-center")}>
+                <TrashIcon
+                    className={clsx(
+                        "w-5",
+                        "text-gray-500",
+                        "hover:text-red-600",
+                        "hover:cursor-pointer",
+                    )}
+                    onClick={resetPlaneGrid}
+                />
+            </div>
         </div>
     );
 };

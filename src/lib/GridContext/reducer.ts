@@ -10,6 +10,7 @@ export interface GridState {
 // Actions:
 export enum GridActionKind {
     ChangePlaneGrid,
+    ResetPlaneGrid,
     ChangeGridSize,
 }
 
@@ -21,9 +22,13 @@ export interface ChangeGridSizeAction {
     type: GridActionKind.ChangeGridSize;
     payload: GridState["gridSize"];
 }
+export interface ResetPlaneGridAction {
+    type: GridActionKind.ResetPlaneGrid;
+    payload: "left" | "right" | "bottom";
+}
 //
 
-export type GridActions = ChangePlaneGridAction | ChangeGridSizeAction;
+export type GridActions = ChangePlaneGridAction | ChangeGridSizeAction | ResetPlaneGridAction;
 
 export function gridReducer(state: GridState, action: GridActions) {
     const { type, payload } = action;
@@ -42,6 +47,18 @@ export function gridReducer(state: GridState, action: GridActions) {
                 ...getPlaneGrid(payload),
                 gridSize: payload,
             };
+        case GridActionKind.ResetPlaneGrid:
+            // eslint-disable-next-line no-case-declarations
+            let planeGrid = state.rightPlaneGrid;
+            if (payload === "left") planeGrid = state.leftPlaneGrid;
+            else if (payload === "right") planeGrid = state.rightPlaneGrid;
+            else if (payload === "bottom") planeGrid = state.bottomPlaneGrid;
+
+            planeGrid.forEach((row) => {
+                for (let i = 0; i < row.length; i++) row[i] = 0;
+            });
+
+            return { ...state, leftPlaneGrid: [...state.leftPlaneGrid] };
         default:
             return state;
     }

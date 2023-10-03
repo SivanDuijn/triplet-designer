@@ -6,13 +6,13 @@ export function getPlaneGrid(gridSize: number) {
     return {
         leftPlaneGrid: Array(gridSize)
             .fill([])
-            .map(() => Array(gridSize).fill(false)),
+            .map(() => Array(gridSize).fill(0)),
         rightPlaneGrid: Array(gridSize)
             .fill([])
-            .map(() => Array(gridSize).fill(false)),
+            .map(() => Array(gridSize).fill(0)),
         bottomPlaneGrid: Array(gridSize)
             .fill([])
-            .map(() => Array(gridSize).fill(false)),
+            .map(() => Array(gridSize).fill(0)),
     };
 }
 
