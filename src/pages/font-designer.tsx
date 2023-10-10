@@ -1,14 +1,12 @@
 import clsx from "clsx";
 import Head from "next/head";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MemoizedFontCharacterEditor } from "src/components/FontCharacterEditor";
 import { MemoizedFontCharacterViewer } from "src/components/FontCharacterViewer";
 
 const gridSize = 14;
 
 export default function FontDesigner() {
-    const [showGridLines, setShowGridLines] = useState(true);
-
     const [characters, setCharacters] = useState(createEmptyFont());
     const [selectedCharacter, setSelectedCharacter] = useState<PossibleCharacters>("A");
 
@@ -19,35 +17,48 @@ export default function FontDesigner() {
         });
     }, [selectedCharacter, characters]);
 
+    const exportCharacters = useCallback(() => {
+        const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+            JSON.stringify(characters),
+        )}`;
+        const link = document.createElement("a");
+        link.href = jsonString;
+        link.download = "characters.json";
+
+        link.click();
+    }, [characters]);
+
+    const importButtonClicked = useCallback(() => {
+        importInputRef.current?.click();
+    }, []);
+
+    const importInputRef = useRef<HTMLInputElement>(null);
+    const importCharacters = useCallback(() => {
+        if (!importInputRef.current?.files) return;
+        const file = importInputRef.current.files[0];
+        if (!file) return;
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+            const json = e.target?.result;
+            if (typeof json != "string") return;
+            const chars = JSON.parse(json);
+            if (chars) setCharacters(chars);
+        };
+        fileReader.readAsText(file, "UTF-8");
+    }, []);
+
     return (
         <div className={clsx("flex", "h-full", "px-2", "pt-2", "justify-center")}>
             <Head>
                 <title>Font Designer</title>
             </Head>
             <div className={clsx("flex", "flex-col", "items-center", "max-w-[70rem]")}>
-                <p className={clsx("text-xl")}>{selectedCharacter}</p>
-                <div className={clsx("grid", "grid-cols-3")}>
-                    <div />
-                    <MemoizedFontCharacterEditor
-                        className={clsx("w-60", "border", "border-gray-600")}
-                        gridLines={showGridLines}
-                        gridSize={gridSize}
-                        characterName={selectedCharacter}
-                        character={characters[selectedCharacter]}
-                        onUpdate={onCharacterUpdate}
-                    />
-                    <div className={clsx("ml-4")}>
-                        <input
-                            type="checkbox"
-                            id="gridLines"
-                            onChange={(e) => setShowGridLines(e.currentTarget.checked)}
-                            checked={showGridLines}
-                        />
-                        <label htmlFor="gridLines" className={clsx("ml-2", "font-bold")}>
-                            Grid lines
-                        </label>
-                    </div>
-                </div>
+                <MemoizedFontCharacterEditor
+                    gridSize={gridSize}
+                    characterName={selectedCharacter}
+                    character={characters[selectedCharacter]}
+                    onUpdate={onCharacterUpdate}
+                />
                 <div className={clsx("flex", "flex-wrap", "mt-4")}>
                     {Object.entries(characters).map(([cn, c]) => (
                         <div
@@ -62,6 +73,46 @@ export default function FontDesigner() {
                         </div>
                     ))}
                 </div>
+                <button
+                    className={clsx(
+                        "mt-6",
+                        "px-2",
+                        "py-1",
+                        "rounded",
+                        "bg-[#002000]",
+                        "hover:bg-[#003000]",
+                        "active:bg-[#004000]",
+                        "border",
+                        "border-gray-500",
+                    )}
+                    onClick={exportCharacters}
+                >
+                    Export
+                </button>
+                <input
+                    type="file"
+                    id="file"
+                    ref={importInputRef}
+                    style={{ display: "none" }}
+                    accept="application/JSON"
+                    onChange={importCharacters}
+                />
+                <button
+                    className={clsx(
+                        "mt-6",
+                        "px-2",
+                        "py-1",
+                        "rounded",
+                        "bg-[#002000]",
+                        "hover:bg-[#003000]",
+                        "active:bg-[#004000]",
+                        "border",
+                        "border-gray-500",
+                    )}
+                    onClick={importButtonClicked}
+                >
+                    Import
+                </button>
             </div>
         </div>
     );

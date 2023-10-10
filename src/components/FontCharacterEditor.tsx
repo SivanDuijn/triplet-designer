@@ -1,3 +1,4 @@
+import { TrashIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
 import { MemoizedSVGPixelCell } from "./SVGPixelCell";
@@ -7,7 +8,6 @@ export type FontCharacterEditorProps = {
     characterName: string;
     character: number[][];
     className?: string;
-    gridLines?: boolean;
     onUpdate: () => void;
 };
 
@@ -15,74 +15,108 @@ export const MemoizedFontCharacterEditor = memo(FontCharacterEditor);
 export function FontCharacterEditor(props: FontCharacterEditorProps) {
     const cellSize = 100 / props.gridSize;
 
-    const [character, setCharacter] = useState<number[][]>([]);
-    useEffect(() => setCharacter(props.character), [props.characterName]);
+    const [showGridLines, setShowGridLines] = useState(false);
+    const [character, setCharacter] = useState<number[][]>(props.character);
+    useEffect(() => setCharacter(props.character), [props.character]);
 
     const mouseIsDownEditing = useRef<boolean>(false);
 
     return (
-        <div className={props.className}>
-            <svg
-                viewBox="0 0 100 100"
-                preserveAspectRatio="xMidYMid slice"
-                role="img"
-                className={clsx("hover:cursor-pointer")}
-                onMouseUp={() => props.onUpdate()}
-                onMouseLeave={(e) => e.buttons == 1 && props.onUpdate()}
-            >
-                {character.map((rows, i) =>
-                    rows.map((value, j) => (
-                        <MemoizedSVGPixelCell
-                            key={i * props.gridSize + j}
-                            cellSize={cellSize}
-                            i={i}
-                            j={j}
-                            value={value}
-                            onChange={(v) => {
-                                character[i][j] = v;
+        <div>
+            <p className={clsx("text-xl", "text-center")}>{props.characterName}</p>
+            <div className={clsx("grid", "grid-cols-3")}>
+                <div />
+                <div className={clsx("w-60", "border", "border-gray-600")}>
+                    <svg
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="xMidYMid slice"
+                        role="img"
+                        className={clsx("hover:cursor-pointer")}
+                        onMouseUp={() => props.onUpdate()}
+                        onMouseLeave={(e) => e.buttons == 1 && props.onUpdate()}
+                    >
+                        {character.map((rows, i) =>
+                            rows.map((value, j) => (
+                                <MemoizedSVGPixelCell
+                                    key={i * props.gridSize + j}
+                                    cellSize={cellSize}
+                                    i={i}
+                                    j={j}
+                                    value={value}
+                                    onChange={(v) => {
+                                        character[i][j] = v;
+                                        setCharacter([...character]);
+                                        props.onUpdate();
+                                    }}
+                                    onMouseDown={(enabling) => {
+                                        mouseIsDownEditing.current = enabling;
+                                    }}
+                                    onMouseEnter={(mouseIsDown) => {
+                                        if (mouseIsDown) {
+                                            character[i][j] = mouseIsDownEditing.current ? 1 : 0;
+                                            setCharacter([...character]);
+                                        }
+                                    }}
+                                />
+                            )),
+                        )}
+
+                        {showGridLines &&
+                            Array(props.gridSize - 1)
+                                .fill(0)
+                                .map((_, i) => {
+                                    const offset = (i + 1) * cellSize;
+                                    return (
+                                        <g key={i}>
+                                            <line
+                                                x1={offset}
+                                                y1={0}
+                                                x2={offset}
+                                                y2={100}
+                                                stroke="black"
+                                                strokeWidth={0.5}
+                                            />
+                                            <line
+                                                x1={0}
+                                                y1={offset}
+                                                x2={100}
+                                                y2={offset}
+                                                stroke="black"
+                                                strokeWidth={0.5}
+                                            />
+                                        </g>
+                                    );
+                                })}
+                    </svg>
+                </div>
+                <div className={clsx("ml-4", "relative")}>
+                    <input
+                        type="checkbox"
+                        id="gridLines"
+                        onChange={(e) => setShowGridLines(e.currentTarget.checked)}
+                        checked={showGridLines}
+                    />
+                    <label htmlFor="gridLines" className={clsx("ml-2", "font-bold")}>
+                        Grid lines
+                    </label>
+                    <div className={clsx("absolute", "left-0", "bottom-0")}>
+                        <TrashIcon
+                            className={clsx(
+                                "w-5",
+                                "text-gray-500",
+                                "hover:text-red-600",
+                                "hover:cursor-pointer",
+                            )}
+                            onClick={() => {
+                                for (let i = 0; i < character.length; i++)
+                                    for (let j = 0; j < character.length; j++) character[i][j] = 0;
                                 setCharacter([...character]);
                                 props.onUpdate();
                             }}
-                            onMouseDown={(enabling) => {
-                                mouseIsDownEditing.current = enabling;
-                            }}
-                            onMouseEnter={(mouseIsDown) => {
-                                if (mouseIsDown) {
-                                    character[i][j] = mouseIsDownEditing.current ? 1 : 0;
-                                    setCharacter([...character]);
-                                }
-                            }}
                         />
-                    )),
-                )}
-
-                {props.gridLines &&
-                    Array(props.gridSize - 1)
-                        .fill(0)
-                        .map((_, i) => {
-                            const offset = (i + 1) * cellSize;
-                            return (
-                                <g key={i}>
-                                    <line
-                                        x1={offset}
-                                        y1={0}
-                                        x2={offset}
-                                        y2={100}
-                                        stroke="black"
-                                        strokeWidth={0.5}
-                                    />
-                                    <line
-                                        x1={0}
-                                        y1={offset}
-                                        x2={100}
-                                        y2={offset}
-                                        stroke="black"
-                                        strokeWidth={0.5}
-                                    />
-                                </g>
-                            );
-                        })}
-            </svg>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
