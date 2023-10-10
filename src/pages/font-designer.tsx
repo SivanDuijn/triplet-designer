@@ -1,44 +1,131 @@
 import clsx from "clsx";
 import Head from "next/head";
-import { useEffect } from "react";
-import { FontCharacterEditor } from "src/components/FontCharacterEditor";
-import { useMouseIsDown } from "src/lib/MouseContext";
+import { useCallback, useState } from "react";
+import { MemoizedFontCharacterEditor } from "src/components/FontCharacterEditor";
+import { MemoizedFontCharacterViewer } from "src/components/FontCharacterViewer";
+
+const gridSize = 14;
 
 export default function FontDesigner() {
-    const { changeMouseIsDown } = useMouseIsDown();
-    useEffect(() => {
-        window.addEventListener("mousedown", () => changeMouseIsDown(true));
-        window.addEventListener("mouseup", () => changeMouseIsDown(false));
-    }, []);
+    const [showGridLines, setShowGridLines] = useState(true);
+
+    const [characters, setCharacters] = useState(createEmptyFont());
+    const [selectedCharacter, setSelectedCharacter] = useState<PossibleCharacters>("A");
+
+    const onCharacterUpdate = useCallback(() => {
+        setCharacters({
+            ...characters,
+            [selectedCharacter]: [...characters[selectedCharacter]],
+        });
+    }, [selectedCharacter, characters]);
 
     return (
-        <div className={clsx("flex", "justify-center", "h-full", "px-2", "pt-2")}>
+        <div className={clsx("flex", "h-full", "px-2", "pt-2", "justify-center")}>
             <Head>
                 <title>Font Designer</title>
             </Head>
-            <div className={clsx("flex", "flex-col", "items-center")}>
-                <div className={clsx("flex")}>
-                    <FontCharacterEditor className={clsx("w-60")} />
-                </div>
-                <div className={clsx("border-2", "border-slate-200", "mt-4", "p-4")}>
-                    <div className={clsx("max-w-[6rem]")}>
-                        <label
-                            htmlFor="first_name"
-                            className="block text-md text-gray-900 dark:text-white font-bold"
-                        >
-                            Grid size
-                        </label>
+            <div className={clsx("flex", "flex-col", "items-center", "max-w-[70rem]")}>
+                <p className={clsx("text-xl")}>{selectedCharacter}</p>
+                <div className={clsx("grid", "grid-cols-3")}>
+                    <div />
+                    <MemoizedFontCharacterEditor
+                        className={clsx("w-60", "border", "border-gray-600")}
+                        gridLines={showGridLines}
+                        gridSize={gridSize}
+                        characterName={selectedCharacter}
+                        character={characters[selectedCharacter]}
+                        onUpdate={onCharacterUpdate}
+                    />
+                    <div className={clsx("ml-4")}>
                         <input
-                            type="number"
-                            id="first_name"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            defaultValue={5}
-                            // onChange={}
-                            required
+                            type="checkbox"
+                            id="gridLines"
+                            onChange={(e) => setShowGridLines(e.currentTarget.checked)}
+                            checked={showGridLines}
                         />
+                        <label htmlFor="gridLines" className={clsx("ml-2", "font-bold")}>
+                            Grid lines
+                        </label>
                     </div>
+                </div>
+                <div className={clsx("flex", "flex-wrap", "mt-4")}>
+                    {Object.entries(characters).map(([cn, c]) => (
+                        <div
+                            key={cn}
+                            onClick={() => setSelectedCharacter(cn as PossibleCharacters)}
+                        >
+                            <MemoizedFontCharacterViewer
+                                placeholder={cn}
+                                className={clsx("w-24", "m-1", "cursor-pointer")}
+                                character={c}
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
     );
 }
+
+const emptyCharacter = (): number[][] =>
+    Array.from({ length: gridSize }, () => Array.from({ length: gridSize }, () => 0));
+
+const allCharacters = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+] as const;
+
+type PossibleCharacters = typeof allCharacters[number];
+
+const createEmptyFont = () => ({
+    A: emptyCharacter(),
+    B: emptyCharacter(),
+    C: emptyCharacter(),
+    D: emptyCharacter(),
+    E: emptyCharacter(),
+    F: emptyCharacter(),
+    G: emptyCharacter(),
+    H: emptyCharacter(),
+    I: emptyCharacter(),
+    J: emptyCharacter(),
+    K: emptyCharacter(),
+    L: emptyCharacter(),
+    M: emptyCharacter(),
+    N: emptyCharacter(),
+    O: emptyCharacter(),
+    P: emptyCharacter(),
+    Q: emptyCharacter(),
+    R: emptyCharacter(),
+    S: emptyCharacter(),
+    T: emptyCharacter(),
+    U: emptyCharacter(),
+    V: emptyCharacter(),
+    W: emptyCharacter(),
+    X: emptyCharacter(),
+    Y: emptyCharacter(),
+    Z: emptyCharacter(),
+});

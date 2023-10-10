@@ -1,7 +1,8 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { useRef } from "react";
 import { useGridSize, usePlaneGrid } from "src/lib/GridContext/hooks";
-import { SVGPixelCell } from "./PixelCell";
+import { MemoizedSVGPixelCell } from "./SVGPixelCell";
 
 export type ShapePlaneEditorProps = {
     className?: string;
@@ -14,6 +15,8 @@ export const ShapePlaneEditor = (props: ShapePlaneEditorProps) => {
     const cellSize = 100 / gridSize;
     const { planeGrid, changePlaneGrid, resetPlaneGrid } = usePlaneGrid(props.plane);
 
+    const mouseIsDownEditing = useRef<boolean>(false);
+
     return (
         <div className={props.className}>
             <svg
@@ -24,13 +27,25 @@ export const ShapePlaneEditor = (props: ShapePlaneEditorProps) => {
             >
                 {planeGrid.map((rows, i) =>
                     rows.map((value, j) => (
-                        <SVGPixelCell
+                        <MemoizedSVGPixelCell
                             key={i * gridSize + j}
                             cellSize={cellSize}
                             i={i}
                             j={j}
                             value={value}
                             onChange={(value) => changePlaneGrid({ i, j, value })}
+                            onMouseDown={(enabling) => {
+                                mouseIsDownEditing.current = enabling;
+                            }}
+                            onMouseEnter={(mouseIsDown) => {
+                                if (mouseIsDown) {
+                                    changePlaneGrid({
+                                        i,
+                                        j,
+                                        value: mouseIsDownEditing.current ? 1 : 0,
+                                    });
+                                }
+                            }}
                             allowHalfCells
                             padding
                         />

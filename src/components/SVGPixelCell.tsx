@@ -1,20 +1,22 @@
 import clsx from "clsx";
-import { useState, useCallback, Dispatch, SetStateAction } from "react";
-import { useMouseIsDown, useMouseIsEnablingCells } from "src/lib/MouseContext";
+import { useState, useCallback, Dispatch, SetStateAction, memo } from "react";
 
 export type SVGPixelCellProps = {
     i: number;
     j: number;
     cellSize: number;
     value: number;
-    onChange: (value: number) => void;
+    onChange?: (value: number) => void;
+    onMouseDown?: (enabling: boolean) => void;
+    onMouseEnter?: (mouseIsDown: boolean) => void;
     allowHalfCells?: boolean;
     padding?: boolean;
+    debug?: boolean;
 };
+
+export const MemoizedSVGPixelCell = memo(SVGPixelCell);
 export function SVGPixelCell(props: SVGPixelCellProps) {
     const { i, j, cellSize, value, onChange } = props;
-    const { mouseIsDown } = useMouseIsDown();
-    const { mouseIsEnablingCells, changeMouseIsEnablingCells } = useMouseIsEnablingCells();
     const [hoveringMiddle, setHoveringMiddle] = useState(false);
     const [hoveringTopRight, setHoveringTopRight] = useState(false);
     const [hoveringTopLeft, setHoveringTopLeft] = useState(false);
@@ -30,36 +32,34 @@ export function SVGPixelCell(props: SVGPixelCellProps) {
         (areaIndex: number, hovering: boolean) =>
             clsx(
                 value === areaIndex
-                    ? "fill-slate-300"
+                    ? "fill-gray-300"
                     : hovering
-                    ? "fill-slate-300"
-                    : "fill-slate-700",
+                    ? "fill-gray-300"
+                    : "fill-gray-700",
                 hovering ? "opacity-100" : value === areaIndex ? "opacity-60" : "opacity-0",
             ),
         [value],
     );
 
     const getMouseEvents = useCallback(
-        (areaIndex: number, setHovering: Dispatch<SetStateAction<boolean>>) => ({
-            onMouseDown: () => {
-                changeMouseIsEnablingCells(value === areaIndex ? false : true);
-                onChange(value === areaIndex ? 0 : areaIndex);
-            },
-            onMouseEnter: () => {
-                setHovering(true);
-                if (mouseIsDown)
-                    if (mouseIsEnablingCells) onChange(1);
-                    else onChange(0);
-            },
-            onMouseLeave: () => setHovering(false),
-        }),
-        [mouseIsDown, mouseIsEnablingCells],
+        (areaIndex: number, setHovering: Dispatch<SetStateAction<boolean>>) =>
+            onChange
+                ? {
+                      onMouseDown: () => onChange(value === areaIndex ? 0 : areaIndex),
+                      onMouseEnter: () => setHovering(true),
+                      onMouseLeave: () => setHovering(false),
+                  }
+                : {},
+        [value, onChange],
     );
 
     return (
-        <g>
+        <g
+            onMouseDown={() => props.onMouseDown && props.onMouseDown(!value)}
+            onMouseEnter={(e) => props.onMouseEnter && props.onMouseEnter(e.buttons === 1)}
+        >
             <rect
-                className={clsx("fill-slate-700", "opacity-60")}
+                className={clsx("fill-gray-700", "opacity-60")}
                 x={x}
                 y={y}
                 width={cellSize - padding}

@@ -1,21 +1,10 @@
 import clsx from "clsx";
 import Head from "next/head";
-import { useEffect } from "react";
 import { ShapePlaneEditor } from "src/components/ShapePlaneEditor";
 import { MemoizedViewGLCanvas } from "src/components/ViewGLCanvas/MemoizedViewGLCanvas";
 import { useGridSize } from "src/lib/GridContext/hooks";
-import { useMouseIsDown, useMouseIsEnablingCells } from "src/lib/MouseContext";
 
 export default function HomePage() {
-    const { changeMouseIsDown } = useMouseIsDown();
-    const { changeMouseIsEnablingCells } = useMouseIsEnablingCells();
-    useEffect(() => {
-        window.addEventListener("mousedown", () => changeMouseIsDown(true));
-        window.addEventListener("mouseup", () => {
-            changeMouseIsDown(false);
-            changeMouseIsEnablingCells(undefined);
-        });
-    }, []);
     const { changeGridSize } = useGridSize();
 
     return (
