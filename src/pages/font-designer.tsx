@@ -1,6 +1,13 @@
+import {
+    ArrowDownOnSquareIcon,
+    ArrowSmallLeftIcon,
+    ArrowSmallRightIcon,
+    ArrowUpOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Head from "next/head";
 import { useCallback, useRef, useState } from "react";
+import Button from "src/components/atoms/Button";
 import { MemoizedFontCharacterEditor } from "src/components/FontCharacterEditor";
 import { MemoizedFontCharacterViewer } from "src/components/FontCharacterViewer";
 
@@ -9,13 +16,14 @@ const gridSize = 14;
 export default function FontDesigner() {
     const [characters, setCharacters] = useState(createEmptyFont());
     const [selectedCharacter, setSelectedCharacter] = useState<PossibleCharacters>("A");
+    const [selectedVersion, setSelectedVersion] = useState(0);
 
     const onCharacterUpdate = useCallback(() => {
-        setCharacters({
-            ...characters,
-            [selectedCharacter]: [...characters[selectedCharacter]],
-        });
-    }, [selectedCharacter, characters]);
+        characters[selectedCharacter][selectedVersion] = [
+            ...characters[selectedCharacter][selectedVersion],
+        ];
+        setCharacters({ ...characters });
+    }, [characters, selectedCharacter, selectedVersion]);
 
     const exportCharacters = useCallback(() => {
         const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
@@ -53,13 +61,96 @@ export default function FontDesigner() {
                 <title>Font Designer</title>
             </Head>
             <div className={clsx("flex", "flex-col", "items-center", "max-w-[70rem]")}>
-                <MemoizedFontCharacterEditor
-                    gridSize={gridSize}
-                    characterName={selectedCharacter}
-                    character={characters[selectedCharacter]}
-                    onUpdate={onCharacterUpdate}
-                />
-                <div className={clsx("flex", "flex-wrap", "mt-4")}>
+                <div className={clsx("grid", "grid-cols-3")}>
+                    <div>
+                        <div className={clsx("mt-6", "mr-6", "float-right")}>
+                            <input
+                                type="file"
+                                id="file"
+                                ref={importInputRef}
+                                style={{ display: "none" }}
+                                accept="application/JSON"
+                                onChange={importCharacters}
+                            />
+                            <Button
+                                label="Import"
+                                icon={ArrowDownOnSquareIcon}
+                                onClick={importButtonClicked}
+                            />
+                            <Button
+                                label="Export"
+                                icon={ArrowUpOnSquareIcon}
+                                onClick={exportCharacters}
+                            />
+                        </div>
+                    </div>
+                    <MemoizedFontCharacterEditor
+                        gridSize={gridSize}
+                        characterName={selectedCharacter}
+                        character={characters[selectedCharacter][selectedVersion]}
+                        onUpdate={onCharacterUpdate}
+                    />
+                </div>
+                <div className={clsx("mt-8", "flex")}>
+                    {characters[selectedCharacter].map((c, i) => (
+                        <div key={selectedCharacter + i} className="relative">
+                            {i < characters[selectedCharacter].length - 1 && (
+                                <ArrowSmallRightIcon
+                                    title="Copy this character to the right"
+                                    className={clsx(
+                                        "w-4",
+                                        "absolute",
+                                        "-top-3",
+                                        "right-2",
+                                        "text-gray-700",
+                                        "hover:text-gray-300",
+                                        "hover:cursor-pointer",
+                                    )}
+                                    onClick={() => {
+                                        // Copy this character to the right
+                                        const rightC = characters[selectedCharacter][i + 1];
+                                        for (let x = 0; x < c.length; x++)
+                                            for (let y = 0; y < c.length; y++)
+                                                rightC[x][y] = c[x][y];
+                                        characters[selectedCharacter][i + 1] = [...rightC];
+                                        setCharacters({ ...characters });
+                                    }}
+                                />
+                            )}
+                            {i > 0 && (
+                                <ArrowSmallLeftIcon
+                                    title="Copy this character to the left"
+                                    className={clsx(
+                                        "w-4",
+                                        "absolute",
+                                        "-top-3",
+                                        "left-2",
+                                        "text-gray-700",
+                                        "hover:text-gray-300",
+                                        "hover:cursor-pointer",
+                                    )}
+                                    onClick={() => {
+                                        // Copy this character to the left
+                                        const leftC = characters[selectedCharacter][i - 1];
+                                        for (let x = 0; x < c.length; x++)
+                                            for (let y = 0; y < c.length; y++)
+                                                leftC[x][y] = c[x][y];
+                                        characters[selectedCharacter][i - 1] = [...leftC];
+                                        setCharacters({ ...characters });
+                                    }}
+                                />
+                            )}
+                            <div onClick={() => setSelectedVersion(i)}>
+                                <MemoizedFontCharacterViewer
+                                    placeholder={selectedCharacter}
+                                    className={clsx("w-24", "m-1", "cursor-pointer")}
+                                    character={c}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className={clsx("flex", "flex-wrap", "mt-4", "justify-center")}>
                     {Object.entries(characters).map(([cn, c]) => (
                         <div
                             key={cn}
@@ -68,51 +159,11 @@ export default function FontDesigner() {
                             <MemoizedFontCharacterViewer
                                 placeholder={cn}
                                 className={clsx("w-24", "m-1", "cursor-pointer")}
-                                character={c}
+                                character={c[selectedVersion]}
                             />
                         </div>
                     ))}
                 </div>
-                <button
-                    className={clsx(
-                        "mt-6",
-                        "px-2",
-                        "py-1",
-                        "rounded",
-                        "bg-[#002000]",
-                        "hover:bg-[#003000]",
-                        "active:bg-[#004000]",
-                        "border",
-                        "border-gray-500",
-                    )}
-                    onClick={exportCharacters}
-                >
-                    Export
-                </button>
-                <input
-                    type="file"
-                    id="file"
-                    ref={importInputRef}
-                    style={{ display: "none" }}
-                    accept="application/JSON"
-                    onChange={importCharacters}
-                />
-                <button
-                    className={clsx(
-                        "mt-6",
-                        "px-2",
-                        "py-1",
-                        "rounded",
-                        "bg-[#002000]",
-                        "hover:bg-[#003000]",
-                        "active:bg-[#004000]",
-                        "border",
-                        "border-gray-500",
-                    )}
-                    onClick={importButtonClicked}
-                >
-                    Import
-                </button>
             </div>
         </div>
     );
@@ -153,30 +204,30 @@ const allCharacters = [
 type PossibleCharacters = typeof allCharacters[number];
 
 const createEmptyFont = () => ({
-    A: emptyCharacter(),
-    B: emptyCharacter(),
-    C: emptyCharacter(),
-    D: emptyCharacter(),
-    E: emptyCharacter(),
-    F: emptyCharacter(),
-    G: emptyCharacter(),
-    H: emptyCharacter(),
-    I: emptyCharacter(),
-    J: emptyCharacter(),
-    K: emptyCharacter(),
-    L: emptyCharacter(),
-    M: emptyCharacter(),
-    N: emptyCharacter(),
-    O: emptyCharacter(),
-    P: emptyCharacter(),
-    Q: emptyCharacter(),
-    R: emptyCharacter(),
-    S: emptyCharacter(),
-    T: emptyCharacter(),
-    U: emptyCharacter(),
-    V: emptyCharacter(),
-    W: emptyCharacter(),
-    X: emptyCharacter(),
-    Y: emptyCharacter(),
-    Z: emptyCharacter(),
+    A: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    B: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    C: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    D: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    E: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    F: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    G: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    H: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    I: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    J: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    K: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    L: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    M: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    N: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    O: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    P: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    Q: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    R: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    S: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    T: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    U: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    V: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    W: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    X: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    Y: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
+    Z: [emptyCharacter(), emptyCharacter(), emptyCharacter()],
 });
