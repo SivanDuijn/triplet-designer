@@ -14,6 +14,7 @@ import { MemoizedFontCharacterViewer } from "src/components/FontCharacterViewer"
 const gridSize = 14;
 
 export default function FontDesigner() {
+    const [isLightTheme, setIsLightTheme] = useState(false);
     const [characters, setCharacters] = useState(createEmptyFont());
     const [selectedCharacter, setSelectedCharacter] = useState<PossibleCharacters>("A");
     const [selectedVersion, setSelectedVersion] = useState(0);
@@ -56,11 +57,36 @@ export default function FontDesigner() {
     }, []);
 
     return (
-        <div className={clsx("flex", "h-full", "px-2", "pt-2", "justify-center", "bg-white")}>
+        <div
+            className={clsx(
+                "flex",
+                "h-full",
+                "px-2",
+                "pt-2",
+                "justify-center",
+                isLightTheme && "bg-white text-black",
+                "transition-colors",
+                "transition-opacity",
+            )}
+        >
             <Head>
                 <title>Font Designer</title>
             </Head>
-            <div className={clsx("flex", "flex-col", "items-center", "max-w-[70rem]")}>
+            <div className={clsx("flex", "flex-col", "items-center", "max-w-[70rem]", "relative")}>
+                <p
+                    className={clsx(
+                        "absolute",
+                        "left-0",
+                        "top-2",
+                        "text-xs",
+                        "text-gray-400",
+                        isLightTheme ? "hover:text-gray-800" : "hover:text-gray-100",
+                        "cursor-pointer",
+                    )}
+                    onClick={() => setIsLightTheme(!isLightTheme)}
+                >
+                    Theme
+                </p>
                 <div className={clsx("grid", "grid-cols-3")}>
                     <div>
                         <div className={clsx("mt-6", "mr-6", "float-right")}>
@@ -76,14 +102,14 @@ export default function FontDesigner() {
                                 label="Import"
                                 icon={ArrowDownOnSquareIcon}
                                 onClick={importButtonClicked}
-                                lightTheme
+                                lightTheme={isLightTheme}
                                 className="mt-4"
                             />
                             <Button
                                 label="Export"
                                 icon={ArrowUpOnSquareIcon}
                                 onClick={exportCharacters}
-                                lightTheme
+                                lightTheme={isLightTheme}
                                 className="mt-4"
                             />
                         </div>
@@ -93,7 +119,7 @@ export default function FontDesigner() {
                         characterName={selectedCharacter}
                         character={characters[selectedCharacter][selectedVersion]}
                         onUpdate={onCharacterUpdate}
-                        lightTheme
+                        lightTheme={isLightTheme}
                     />
                 </div>
                 <div className={clsx("mt-8", "flex")}>
@@ -150,6 +176,7 @@ export default function FontDesigner() {
                                     placeholder={selectedCharacter}
                                     className={clsx("w-24", "m-1", "cursor-pointer")}
                                     character={c}
+                                    lightTheme={isLightTheme}
                                 />
                             </div>
                         </div>
@@ -165,6 +192,7 @@ export default function FontDesigner() {
                                 placeholder={cn}
                                 className={clsx("w-24", "m-1", "cursor-pointer")}
                                 character={c[selectedVersion]}
+                                lightTheme={isLightTheme}
                             />
                         </div>
                     ))}

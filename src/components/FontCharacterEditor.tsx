@@ -110,7 +110,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                 </div>
             </div>
             <div className={clsx("mt-6", "ml-6")}>
-                <label htmlFor="countries" className={clsx("block", "font-bold", "text-black")}>
+                <label htmlFor="countries" className={clsx("block", "font-bold")}>
                     Kernel
                 </label>
                 <select
@@ -121,11 +121,10 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                         "block",
                         "px-2.5",
                         "py-1.5",
-                        "text-black",
-                        "bg-[#5ce389]",
+                        props.lightTheme ? "bg-[#5ce389]" : "bg-[#002000]",
                         "border-gray-500",
-                        "focus:ring-gray-600",
-                        "focus:border-gray-600",
+                        "focus:ring-gray-500",
+                        "focus:border-gray-500",
                     )}
                     onChange={(e) => {
                         morphKernel.current = e.target.value as Kernels;
@@ -146,7 +145,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                         setCharacter([...character]);
                         props.onUpdate();
                     }}
-                    lightTheme
+                    lightTheme={props.lightTheme}
                 />
                 <Button
                     label="Erode"
@@ -156,7 +155,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                         setCharacter([...character]);
                         props.onUpdate();
                     }}
-                    lightTheme
+                    lightTheme={props.lightTheme}
                 />
                 <input
                     type="checkbox"
@@ -165,7 +164,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                     checked={showGridLines}
                     className={clsx("mt-4")}
                 />
-                <label htmlFor="gridLines" className={clsx("ml-2", "font-bold", "text-black")}>
+                <label htmlFor="gridLines" className={clsx("ml-2", "font-bold")}>
                     Grid lines
                 </label>
             </div>

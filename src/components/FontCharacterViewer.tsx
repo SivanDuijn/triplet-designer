@@ -6,6 +6,7 @@ export type FontCharacterEditorProps = {
     placeholder: string;
     character: number[][];
     className?: string;
+    lightTheme?: boolean;
 };
 
 export const MemoizedFontCharacterViewer = memo(FontCharacterViewer);
@@ -29,7 +30,7 @@ function FontCharacterViewer(props: FontCharacterEditorProps) {
                             i={i}
                             j={j}
                             value={value}
-                            lightTheme
+                            lightTheme={props.lightTheme}
                         />
                     )),
                 )}

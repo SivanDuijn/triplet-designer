@@ -18,7 +18,7 @@ export default function Button(props: ButtonProps) {
                 "py-[0.15rem]",
                 "rounded",
                 props.lightTheme
-                    ? "bg-[#5ce389] hover:bg-[#57d781] text-black active:bg-[#51c879]"
+                    ? "bg-[#5ce389] hover:bg-[#57d781] active:bg-[#51c879]"
                     : "bg-[#002000] hover:bg-[#001900] hover:text-gray-200 active:bg-[#002300]",
                 "border",
                 "border-gray-500",
