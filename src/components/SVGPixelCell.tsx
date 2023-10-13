@@ -46,7 +46,7 @@ export function SVGPixelCell(props: SVGPixelCellProps) {
                         : "opacity-60"
                     : "opacity-0",
             ),
-        [value],
+        [value, props.lightTheme],
     );
 
     const getMouseEvents = useCallback(
