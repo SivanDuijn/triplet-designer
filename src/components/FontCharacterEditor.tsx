@@ -11,6 +11,7 @@ export type FontCharacterEditorProps = {
     character: number[][];
     className?: string;
     onUpdate: () => void;
+    lightTheme?: boolean;
 };
 
 export const MemoizedFontCharacterEditor = memo(FontCharacterEditor);
@@ -45,6 +46,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                                 i={i}
                                 j={j}
                                 value={value}
+                                lightTheme={props.lightTheme}
                                 onChange={(v) => {
                                     character[i][j] = v;
                                     setCharacter([...character]);
@@ -75,7 +77,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                                             y1={0}
                                             x2={offset}
                                             y2={100}
-                                            stroke="black"
+                                            stroke={props.lightTheme ? "#AAAAAA" : "black"}
                                             strokeWidth={0.5}
                                         />
                                         <line
@@ -83,7 +85,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                                             y1={offset}
                                             x2={100}
                                             y2={offset}
-                                            stroke="black"
+                                            stroke={props.lightTheme ? "#AAAAAA" : "black"}
                                             strokeWidth={0.5}
                                         />
                                     </g>
@@ -108,7 +110,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                 </div>
             </div>
             <div className={clsx("mt-6", "ml-6")}>
-                <label htmlFor="countries" className={clsx("block", "font-bold")}>
+                <label htmlFor="countries" className={clsx("block", "font-bold", "text-black")}>
                     Kernel
                 </label>
                 <select
@@ -119,10 +121,11 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                         "block",
                         "px-2.5",
                         "py-1.5",
-                        "bg-[#002000]",
+                        "text-black",
+                        "bg-[#5ce389]",
                         "border-gray-500",
-                        "focus:ring-gray-300",
-                        "focus:border-gray-300",
+                        "focus:ring-gray-600",
+                        "focus:border-gray-600",
                     )}
                     onChange={(e) => {
                         morphKernel.current = e.target.value as Kernels;
@@ -143,6 +146,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                         setCharacter([...character]);
                         props.onUpdate();
                     }}
+                    lightTheme
                 />
                 <Button
                     label="Erode"
@@ -152,6 +156,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                         setCharacter([...character]);
                         props.onUpdate();
                     }}
+                    lightTheme
                 />
                 <input
                     type="checkbox"
@@ -160,7 +165,7 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                     checked={showGridLines}
                     className={clsx("mt-4")}
                 />
-                <label htmlFor="gridLines" className={clsx("ml-2", "font-bold")}>
+                <label htmlFor="gridLines" className={clsx("ml-2", "font-bold", "text-black")}>
                     Grid lines
                 </label>
             </div>

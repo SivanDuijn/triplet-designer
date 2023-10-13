@@ -6,6 +6,7 @@ export type ButtonProps = {
     icon?: React.FC<Parameters<typeof UsersIcon>[0]>;
     onClick?: () => void;
     className?: string;
+    lightTheme?: boolean;
 };
 
 export default function Button(props: ButtonProps) {
@@ -13,14 +14,12 @@ export default function Button(props: ButtonProps) {
         <button
             className={clsx(
                 "flex",
-                "mt-4",
                 "px-2",
                 "py-[0.15rem]",
                 "rounded",
-                "bg-[#002000]",
-                "hover:bg-[#001900]",
-                "active:bg-[#002300]",
-                "hover:text-gray-200",
+                props.lightTheme
+                    ? "bg-[#5ce389] hover:bg-[#57d781] text-black active:bg-[#51c879]"
+                    : "bg-[#002000] hover:bg-[#001900] hover:text-gray-200 active:bg-[#002300]",
                 "border",
                 "border-gray-500",
                 props.className,

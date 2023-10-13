@@ -56,7 +56,7 @@ export default function FontDesigner() {
     }, []);
 
     return (
-        <div className={clsx("flex", "h-full", "px-2", "pt-2", "justify-center")}>
+        <div className={clsx("flex", "h-full", "px-2", "pt-2", "justify-center", "bg-white")}>
             <Head>
                 <title>Font Designer</title>
             </Head>
@@ -76,11 +76,15 @@ export default function FontDesigner() {
                                 label="Import"
                                 icon={ArrowDownOnSquareIcon}
                                 onClick={importButtonClicked}
+                                lightTheme
+                                className="mt-4"
                             />
                             <Button
                                 label="Export"
                                 icon={ArrowUpOnSquareIcon}
                                 onClick={exportCharacters}
+                                lightTheme
+                                className="mt-4"
                             />
                         </div>
                     </div>
@@ -89,6 +93,7 @@ export default function FontDesigner() {
                         characterName={selectedCharacter}
                         character={characters[selectedCharacter][selectedVersion]}
                         onUpdate={onCharacterUpdate}
+                        lightTheme
                     />
                 </div>
                 <div className={clsx("mt-8", "flex")}>

@@ -12,6 +12,7 @@ export type SVGPixelCellProps = {
     allowHalfCells?: boolean;
     padding?: boolean;
     debug?: boolean;
+    lightTheme?: boolean;
 };
 
 export const MemoizedSVGPixelCell = memo(SVGPixelCell);
@@ -28,15 +29,22 @@ export function SVGPixelCell(props: SVGPixelCellProps) {
 
     const padding = props.padding ? 1 : 0;
 
+    const baseColor = props.lightTheme ? "fill-black" : "fill-gray-300";
+    const bgColor = props.lightTheme ? "fill-gray-200" : "fill-gray-700";
+
     const getClassName = useCallback(
         (areaIndex: number, hovering: boolean) =>
             clsx(
-                value === areaIndex
-                    ? "fill-gray-300"
-                    : hovering
-                    ? "fill-gray-300"
-                    : "fill-gray-700",
-                hovering ? "opacity-100" : value === areaIndex ? "opacity-60" : "opacity-0",
+                baseColor,
+                hovering
+                    ? props.lightTheme
+                        ? "opacity-60"
+                        : "opacity-100"
+                    : value === areaIndex
+                    ? props.lightTheme
+                        ? "opacity-100"
+                        : "opacity-60"
+                    : "opacity-0",
             ),
         [value],
     );
@@ -59,7 +67,7 @@ export function SVGPixelCell(props: SVGPixelCellProps) {
             onMouseEnter={(e) => props.onMouseEnter && props.onMouseEnter(e.buttons === 1)}
         >
             <rect
-                className={clsx("fill-gray-700", "opacity-60")}
+                className={clsx(bgColor, "opacity-60")}
                 x={x}
                 y={y}
                 width={cellSize - padding}

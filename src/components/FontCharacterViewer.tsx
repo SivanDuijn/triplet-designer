@@ -29,6 +29,7 @@ function FontCharacterViewer(props: FontCharacterEditorProps) {
                             i={i}
                             j={j}
                             value={value}
+                            lightTheme
                         />
                     )),
                 )}
