@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const squareKernel = [
     [-1, -1],
     [-1, 0],
@@ -18,9 +19,23 @@ const plusKernel = [
     [1, 0],
 ];
 
-export function erode(grid: number[][]) {
+const verticalKernel = [
+    [0, -1],
+    [0, 1],
+];
+const horizontalKernel = [
+    [-1, 0],
+    [1, 0],
+];
+
+export type Kernels = "square" | "plus" | "horizontal" | "vertical";
+
+export function erode(grid: number[][], kernel: Kernels = "square") {
     const result: number[][] = [];
-    const kernel = plusKernel;
+    let k = squareKernel;
+    if (kernel === "plus") k = plusKernel;
+    else if (kernel === "vertical") k = verticalKernel;
+    else if (kernel === "horizontal") k = horizontalKernel;
 
     for (let i = 0; i < grid.length; i++) {
         const row: number[] = [];
@@ -28,7 +43,7 @@ export function erode(grid: number[][]) {
         for (let j = 0; j < grid.length; j++) {
             if (grid[i][j]) {
                 let allNeighborsOn = true;
-                for (const [di, dj] of kernel) {
+                for (const [di, dj] of k) {
                     const newI = i + di;
                     const newJ = j + dj;
                     if (
@@ -51,9 +66,12 @@ export function erode(grid: number[][]) {
     for (let i = 0; i < grid.length; i++) grid[i] = result[i];
 }
 
-export function dilate(grid: number[][]) {
+export function dilate(grid: number[][], kernel: Kernels = "square") {
     const result: number[][] = [];
-    const kernel = plusKernel;
+    let k = squareKernel;
+    if (kernel === "plus") k = plusKernel;
+    else if (kernel === "vertical") k = verticalKernel;
+    else if (kernel === "horizontal") k = horizontalKernel;
 
     for (let i = 0; i < grid.length; i++) {
         const row: number[] = [];
@@ -62,7 +80,7 @@ export function dilate(grid: number[][]) {
             if (grid[i][j]) row.push(1);
             else {
                 let neighborIsOn = false;
-                for (const [di, dj] of kernel) {
+                for (const [di, dj] of k) {
                     const newI = i + di;
                     const newJ = j + dj;
                     if (

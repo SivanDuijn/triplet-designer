@@ -1,7 +1,7 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
-import { dilate, erode } from "src/lib/morphOperations";
+import { Kernels, dilate, erode } from "src/lib/morphOperations";
 import Button from "./atoms/Button";
 import { MemoizedSVGPixelCell } from "./SVGPixelCell";
 
@@ -22,6 +22,8 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
     useEffect(() => setCharacter(props.character), [props.character]);
 
     const mouseIsDownEditing = useRef<boolean>(false);
+
+    const morphKernel = useRef<Kernels>("square");
 
     return (
         <>
@@ -106,18 +108,47 @@ export function FontCharacterEditor(props: FontCharacterEditorProps) {
                 </div>
             </div>
             <div className={clsx("mt-6", "ml-6")}>
+                <label htmlFor="countries" className={clsx("block", "font-bold")}>
+                    Kernel
+                </label>
+                <select
+                    id="countries"
+                    className={clsx(
+                        "border",
+                        "rounded-lg",
+                        "block",
+                        "px-2.5",
+                        "py-1.5",
+                        "bg-[#002000]",
+                        "border-gray-500",
+                        "focus:ring-gray-300",
+                        "focus:border-gray-300",
+                    )}
+                    onChange={(e) => {
+                        morphKernel.current = e.target.value as Kernels;
+                    }}
+                >
+                    <option selected value="square">
+                        Square
+                    </option>
+                    <option value="plus">Plus</option>
+                    <option value="horizontal">Horizontal</option>
+                    <option value="vertical">Vertical</option>
+                </select>
                 <Button
                     label="Dilate"
+                    className="mt-2"
                     onClick={() => {
-                        dilate(character);
+                        dilate(character, morphKernel.current);
                         setCharacter([...character]);
                         props.onUpdate();
                     }}
                 />
                 <Button
                     label="Erode"
+                    className="mt-2"
                     onClick={() => {
-                        erode(character);
+                        erode(character, morphKernel.current);
                         setCharacter([...character]);
                         props.onUpdate();
                     }}
