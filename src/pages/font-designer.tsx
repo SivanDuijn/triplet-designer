@@ -85,7 +85,7 @@ export default function FontDesigner() {
                     )}
                     onClick={() => setIsLightTheme(!isLightTheme)}
                 >
-                    Theme
+                    theme
                 </p>
                 <div className={clsx("grid", "grid-cols-3")}>
                     <div>
