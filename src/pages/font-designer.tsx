@@ -190,7 +190,7 @@ export default function FontDesigner() {
                         >
                             <MemoizedFontCharacterViewer
                                 placeholder={cn}
-                                className={clsx("w-24", "m-1", "cursor-pointer")}
+                                className={clsx("w-24", "m-2", "cursor-pointer")}
                                 character={c[selectedVersion]}
                                 lightTheme={isLightTheme}
                             />

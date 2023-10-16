@@ -29,8 +29,8 @@ export function SVGPixelCell(props: SVGPixelCellProps) {
 
     const padding = props.padding ? 1 : 0;
 
-    const baseColor = props.lightTheme ? "fill-black" : "fill-gray-300";
-    const bgColor = props.lightTheme ? "fill-gray-200" : "fill-gray-700";
+    const baseColor = props.lightTheme ? "fill-black" : "fill-gray-200";
+    const bgColor = props.lightTheme ? "fill-gray-100" : "fill-gray-700";
 
     const getClassName = useCallback(
         (areaIndex: number, hovering: boolean) =>
